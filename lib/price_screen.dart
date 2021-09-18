@@ -27,6 +27,7 @@ class _PriceScreenState extends State<PriceScreen> {
       onChanged: (value) {
         setState(() {
           selectedCurrency = value;
+          getData();
         });
       },
     );
@@ -52,11 +53,15 @@ class _PriceScreenState extends State<PriceScreen> {
   }
 
   Map<String, String> coinValues = {};
+  bool isWaiting = false;
   void getData() async {
+    isWaiting = true;
     try {
-      double data = await CoinData().getCoinData(selectedCurrency);
+      var data = await CoinData().getCoinData(selectedCurrency);
+      //7. Third, as soon the above line of code completes, we now have the data and no longer need to wait. So we can set isWaiting to false.
+      isWaiting = false;
       setState(() {
-        // coinValues = data.toStringAsFixed(0);
+        coinValues = data;
       });
     } catch (e) {
       print(e);
@@ -85,14 +90,17 @@ class _PriceScreenState extends State<PriceScreen> {
               CryptoCard(
                 cryptoCurrency: 'BTC',
                 selectedCurrency: selectedCurrency,
+                value: isWaiting ? '?' : coinValues['BTC'],
               ),
               CryptoCard(
                 cryptoCurrency: 'ETH',
                 selectedCurrency: selectedCurrency,
+                value: isWaiting ? '?' : coinValues['ETH'],
               ),
               CryptoCard(
                 cryptoCurrency: 'LTC',
                 selectedCurrency: selectedCurrency,
+                value: isWaiting ? '?' : coinValues['LTC'],
               ),
             ],
           ),
